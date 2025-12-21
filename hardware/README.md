@@ -65,3 +65,9 @@ After hardware assembly, we will add:
 ## ✅ Status
 - Hardware documentation structure: Completed
 - Physical wiring and testing: Pending (materials not yet available)
+
+- ## 📐 System Block Diagram
+The hardware and communication block diagram is shown below.
+
+![Block Diagram](hardware_block-diagram.png)
+
