@@ -1,0 +1,298 @@
+[
+    {
+        "id": "6ffbbe6bd42ceeb2",
+        "type": "tab",
+        "label": "Flow 1",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "ce6c42114d519eb0",
+        "type": "mqtt in",
+        "z": "6ffbbe6bd42ceeb2",
+        "name": "",
+        "topic": "iot/fire/sensor",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "bee3736362d7a8e9",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 370,
+        "y": 100,
+        "wires": [
+            [
+                "5bb79c4fe5d1f0c8"
+            ]
+        ]
+    },
+    {
+        "id": "5bb79c4fe5d1f0c8",
+        "type": "json",
+        "z": "6ffbbe6bd42ceeb2",
+        "name": "",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 370,
+        "y": 180,
+        "wires": [
+            [
+                "f9fb2b8f48e53463"
+            ]
+        ]
+    },
+    {
+        "id": "f9fb2b8f48e53463",
+        "type": "function",
+        "z": "6ffbbe6bd42ceeb2",
+        "name": "function 1",
+        "func": "return msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 220,
+        "y": 240,
+        "wires": [
+            [
+                "e9ee474caf6d63f5",
+                "746d9e1e8b72d752"
+            ]
+        ]
+    },
+    {
+        "id": "0cc51c0a2b1c4334",
+        "type": "ui_chart",
+        "z": "6ffbbe6bd42ceeb2",
+        "name": "",
+        "group": "5e9ba147d3d136a9",
+        "order": 0,
+        "width": 0,
+        "height": 0,
+        "label": "Flame Sensor Value",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "",
+        "ymax": "",
+        "removeOlder": 1,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "3600",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 420,
+        "y": 420,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "c315ad3513d82e29",
+        "type": "inject",
+        "z": "6ffbbe6bd42ceeb2",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "{   \"flame_detected\": true,   \"sensor_value\": 320,   \"timestamp\": \"2025-01-12T14:32:10\" }",
+        "payloadType": "json",
+        "x": 90,
+        "y": 100,
+        "wires": [
+            [
+                "f9fb2b8f48e53463"
+            ]
+        ]
+    },
+    {
+        "id": "e9ee474caf6d63f5",
+        "type": "change",
+        "z": "6ffbbe6bd42ceeb2",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "msg.payload.sensor_value",
+                "tot": "jsonata"
+            },
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "flame",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 120,
+        "y": 300,
+        "wires": [
+            [
+                "dc75e0bb42e2a669",
+                "0cc51c0a2b1c4334"
+            ]
+        ]
+    },
+    {
+        "id": "dc75e0bb42e2a669",
+        "type": "debug",
+        "z": "6ffbbe6bd42ceeb2",
+        "name": "debug 1",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 160,
+        "y": 420,
+        "wires": []
+    },
+    {
+        "id": "746d9e1e8b72d752",
+        "type": "change",
+        "z": "6ffbbe6bd42ceeb2",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "msg.payload.flame_detected ? \"🔥 FIRE DETECTED\" : \"✅ No Fire\"",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 480,
+        "y": 240,
+        "wires": [
+            [
+                "fdd6ee1a3a083b50"
+            ]
+        ]
+    },
+    {
+        "id": "fdd6ee1a3a083b50",
+        "type": "ui_text",
+        "z": "6ffbbe6bd42ceeb2",
+        "group": "5e9ba147d3d136a9",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "Fire Status",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "className": "",
+        "style": false,
+        "font": "",
+        "fontSize": 16,
+        "color": "#000000",
+        "x": 470,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "bee3736362d7a8e9",
+        "type": "mqtt-broker",
+        "name": "",
+        "broker": "test.mosquitto.org",
+        "port": 1883,
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": 4,
+        "keepalive": 60,
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthRetain": "false",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closeRetain": "false",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willRetain": "false",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "5e9ba147d3d136a9",
+        "type": "ui_group",
+        "name": "Sensor Data",
+        "tab": "0a7bca60152dc846",
+        "order": 1,
+        "disp": true,
+        "width": 6,
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "0a7bca60152dc846",
+        "type": "ui_tab",
+        "name": "Fire Monitor",
+        "icon": "dashboard",
+        "disabled": false,
+        "hidden": false
+    },
+    {
+        "id": "071d48761039f177",
+        "type": "global-config",
+        "env": [],
+        "modules": {
+            "node-red-dashboard": "3.6.6"
+        }
+    }
+]
