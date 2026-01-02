@@ -15,7 +15,7 @@ GPIO.setup(LED_PIN, GPIO.OUT)
 BROKER = "localhost"
 TOPIC = "iot/fire/sensor"
 
-client = mqtt.Client()
+client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
 client.connect(BROKER, 1883, 60)
 
 print("🔥 Fire detection started...")
