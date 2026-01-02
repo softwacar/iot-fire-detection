@@ -4,30 +4,35 @@ import datetime
 import RPi.GPIO as GPIO
 import paho.mqtt.client as mqtt
 
-# ===== GPIO SETUP =====
-FLAME_PIN = 17  # D0 -> GPIO17
+# GPIO pinleri
+FLAME_PIN = 17   # KY-026 D0
+LED_PIN = 27     # Harici LED
 
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(FLAME_PIN, GPIO.IN)
+GPIO.setup(LED_PIN, GPIO.OUT)
 
-# ===== MQTT SETUP =====
-BROKER = "localhost"        # Mosquitto Raspberry Pi üzerinde
-PORT = 1883
+BROKER = "localhost"
 TOPIC = "iot/fire/sensor"
 
 client = mqtt.Client()
-client.connect(BROKER, PORT, 60)
+client.connect(BROKER, 1883, 60)
 
-print("🔥 Fire detection started (KY-026)...")
+print("🔥 Fire detection started...")
 
 try:
     while True:
-        flame_raw = GPIO.input(FLAME_PIN)
-        flame_detected = (flame_raw == 0)  # KY-026: 0 = fire
+        flame = GPIO.input(FLAME_PIN)  # 0 = alev var
+        flame_detected = (flame == 0)
+
+        if flame_detected:
+            GPIO.output(LED_PIN, GPIO.HIGH)  # LED YAN
+        else:
+            GPIO.output(LED_PIN, GPIO.LOW)   # LED SÖN
 
         data = {
             "flame_detected": flame_detected,
-            "sensor_value": int(flame_detected),  # 1 or 0
+            "sensor_value": 1 if flame_detected else 0,
             "timestamp": datetime.datetime.now().isoformat()
         }
 
@@ -37,7 +42,7 @@ try:
         time.sleep(2)
 
 except KeyboardInterrupt:
-    print("⛔ Stopped by user")
+    print("Stopped")
 
 finally:
     GPIO.cleanup()
