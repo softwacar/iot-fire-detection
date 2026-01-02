@@ -1,10 +1,17 @@
-import json
 import time
-import random
-from datetime import datetime
+import json
+import datetime
 import paho.mqtt.client as mqtt
+import RPi.GPIO as GPIO
 
-BROKER = "localhost"
+# -------- GPIO SETUP --------
+FLAME_PIN = 17  # GPIO17
+
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(FLAME_PIN, GPIO.IN)
+
+# -------- MQTT SETUP --------
+BROKER = "localhost"     # Raspberry Pi üzerinde Mosquitto
 PORT = 1883
 TOPIC = "iot/fire/sensor"
 
@@ -12,22 +19,28 @@ client = mqtt.Client()
 client.connect(BROKER, PORT, 60)
 client.loop_start()
 
-def read_flame_sensor():
-   # Mock flame sensor data (used before real hardware integration)
-    value = random.randint(0, 1023)
-    flame_detected = value > 300
-    return value, flame_detected
+print("🔥 Fire detection started...")
 
-while True:
-    sensor_value, flame = read_flame_sensor()
+try:
+    while True:
+        flame_detected = GPIO.input(FLAME_PIN) == 0
+        # KY-026: Alev varsa genelde LOW verir
 
-    payload = {
-        "flame_detected": flame,
-        "sensor_value": sensor_value,
-        "timestamp": datetime.now().isoformat()
-    }
+        payload = {
+            "flame_detected": flame_detected,
+            "sensor_value": 1 if flame_detected else 0,
+            "timestamp": datetime.datetime.now().isoformat()
+        }
 
-    client.publish(TOPIC, json.dumps(payload))
-    print("Published:", payload)
+        client.publish(TOPIC, json.dumps(payload))
+        print("Published:", payload)
 
-    time.sleep(2)
+        time.sleep(2)
+
+except KeyboardInterrupt:
+    print("Stopped by user")
+
+finally:
+    GPIO.cleanup()
+    client.loop_stop()
+    client.disconnect()
