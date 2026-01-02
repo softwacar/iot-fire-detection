@@ -21,20 +21,21 @@ print("🔥 Fire detection started...")
 
 try:
     while True:
-        flame_raw = GPIO.input(FLAME_PIN)
-        flame_detected = (flame_raw == 0)  # KY-026: 0 = alev
+        flame = GPIO.input(FLAME_PIN)   # 0 = alev var
+        flame_detected = (flame == 0)
 
-        GPIO.output(LED_PIN, flame_detected)
+        GPIO.output(LED_PIN, GPIO.HIGH if flame_detected else GPIO.LOW)
 
         data = {
             "flame_detected": flame_detected,
+            "sensor_value": 1 if flame_detected else 0,
             "timestamp": datetime.datetime.now().isoformat()
         }
 
         client.publish(TOPIC, json.dumps(data))
         print("Published:", data)
 
-        time.sleep(1)
+        time.sleep(2)
 
 except KeyboardInterrupt:
     print("Stopped")
