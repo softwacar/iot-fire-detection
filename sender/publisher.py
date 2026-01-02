@@ -21,14 +21,13 @@ print("🔥 Fire detection started...")
 
 try:
     while True:
-        flame = GPIO.input(FLAME_PIN)   # 0 = FIRE DETECTED
-        flame_detected = (flame == 0)
+        flame_raw = GPIO.input(FLAME_PIN)
+        flame_detected = (flame_raw == 0)  # KY-026: 0 = alev
 
         GPIO.output(LED_PIN, flame_detected)
 
         data = {
             "flame_detected": flame_detected,
-            "sensor_value": int(flame_detected),
             "timestamp": datetime.datetime.now().isoformat()
         }
 
