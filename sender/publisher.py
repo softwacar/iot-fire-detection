@@ -4,31 +4,38 @@ import datetime
 import RPi.GPIO as GPIO
 import paho.mqtt.client as mqtt
 
-FLAME_PIN = 17   # KY-026 D0
-LED_PIN = 27     # Kırmızı LED
+# GPIO pins
+FLAME_PIN = 17   # KY-026 DO (digital output)
+LED_PIN = 27     # Red LED
 
+# GPIO setup
 GPIO.setmode(GPIO.BCM)
-GPIO.setup(FLAME_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+GPIO.setup(FLAME_PIN, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 GPIO.setup(LED_PIN, GPIO.OUT)
 
+# MQTT settings
 BROKER = "localhost"
 TOPIC = "iot/fire/sensor"
 
 client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
 client.connect(BROKER, 1883, 60)
 
-print("🔥 Fire detection started...")
+print("Fire detection system started")
 
 try:
     while True:
-        flame = GPIO.input(FLAME_PIN)   # 0 = ALEV VAR
-        flame_detected = (flame == 0)
+        flame_signal = GPIO.input(FLAME_PIN)
 
+        # ACTIVE-HIGH logic
+        flame_detected = (flame_signal == 1)
+
+        # LED control
         GPIO.output(LED_PIN, GPIO.HIGH if flame_detected else GPIO.LOW)
 
+        # Payload
         data = {
             "flame_detected": flame_detected,
-            "sensor_value": flame,
+            "raw_sensor_value": flame_signal,
             "timestamp": datetime.datetime.now().isoformat()
         }
 
@@ -38,7 +45,7 @@ try:
         time.sleep(1)
 
 except KeyboardInterrupt:
-    print("Stopped")
+    print("System stopped")
 
 finally:
     GPIO.cleanup()
